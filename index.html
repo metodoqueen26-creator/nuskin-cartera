@@ -120,17 +120,94 @@ function nextBirthday(mmdd,from){
 }
 const waLink=(n,t)=>{const d=String(n||'').replace(/\D/g,'');return d?'https://wa.me/'+d+'?text='+encodeURIComponent(t||''):''};
 
+/* ---------- catálogo ---------- */
+const CAT_FECHA='2026-11-02';
+/* nombre, tipo, SV, precio, precio lista, días por unidad, qué repone [[nombre, unidades]] */
+const CAT=[
+ ['ageLOC LumiSpa iO Rose Gold Essentials','tecnologia',200,424450,459710,0,[['Limpiador ageLOC LumiSpa Piel Normal/Combo',1]]],
+ ['ageLOC Boost Essentials','tecnologia',160,253050,272200,0,[['ageLOC Boost Activating Serum',1]]],
+ ['Sistema ageLOC WellSpa iO','tecnologia',275,636740,681340,0,[]],
+ ['Kit ageLOC Facial','kit',500,856540,944790,0,[['Limpiador ageLOC LumiSpa Piel Normal/Combo',1],['ageLOC Galvanic Spa Facial Gels',1]]],
+ ['Kit ageLOC Piel Radiante','kit',500,856540,1004330,0,[]],
+ ['Kit Dúo iO Rose Gold','kit',500,856540,1059360,0,[]],
+ ['Kit Match Perfecto','kit',250,519780,577240,0,[]],
+ ['LOI Kit','kit',1000,1721690,2057840,0,[]],
+ ['Face Spa Essentials Kit','kit',250,418460,449240,0,[['ageLOC Galvanic Spa Facial Gels',1]]],
+ ['Kit Belleza & Bienestar','kit',500,856540,1130580,0,[]],
+ ['Kit Bienestar Prysm iO','kit',500,1180180,1583020,0,[['LifePak',1],['Optimum Omega',1],['Beauty Focus Collagen+ Citrus',1],['Tru Face Essence Ultra (30 unidades)',1]]],
+ ['Kit Complex Refill','kit',163,295530,0,0,[]],
+ ['Kit Esencial Pharmanex','kit',100,199830,245350,0,[]],
+ ['AP24 Social Seller Kit','kit',55,96250,122900,0,[['AP 24 Whitening Fluoride Toothpaste',5]]],
+ ['Kit Social Seller Tru Face Line Corrector','kit',204,391580,412800,0,[['Tru Face Line Corrector',1]]],
+ ['Kit Renueva y Protege','kit',70,130190,149450,0,[]],
+ ['Kit Scion Roll On Social Seller','kit',125,244000,0,0,[['Scion Brightening Roll On',1]]],
+ ['Kit Scion Duo','kit',23,46230,0,0,[['Scion Brightening Roll On',1],['Scion Brightening Skin Lotion',1]]],
+ ['Kit Accent Rose Gold + IdealEyes','kit',99,194130,0,0,[['ageLOC LumiSpa IdealEyes',1]]],
+ ['Kit Collagen Esencial','kit',150,284770,352590,0,[['Beauty Focus Collagen+ Citrus',3]]],
+ ['Kit Collagen Óptimo','kit',300,521990,705180,0,[['Beauty Focus Collagen+ Citrus',6]]],
+ ['Kit Collagen Premium','kit',600,1029560,1410360,0,[['Beauty Focus Collagen+ Citrus',12]]],
+ ['Cabezal ageLOC LumiSpa iO Accent','accesorio',62,121200,0,0,[]],
+ ['Cabezal ageLOC LumiSpa iO Rose Gold Accent','accesorio',62,121200,0,0,[]],
+ ['Base para ageLOC LumiSpa iO','accesorio',0,17160,0,0,[]],
+ ['Cargador para ageLOC LumiSpa iO','accesorio',0,13480,0,0,[]],
+ ['ageLOC LumiSpa iO Cabezal de Tratamiento — Normal','accesorio',29,48820,0,0,[]],
+ ['ageLOC LumiSpa iO Cabezal de Tratamiento — Firme','accesorio',29,48820,0,0,[]],
+ ['ageLOC LumiSpa IdealEyes','uso',37,72930,0,60,[]],
+ ['Tru Face Peptide Retinol Complex','uso',55,99630,0,60,[]],
+ ['Refill Tru Face Peptide Retinol Complex','uso',48,89630,0,60,[]],
+ ['Tru Face Line Corrector','uso',43,82560,0,60,[]],
+ ['Tru Face Essence Ultra (30 unidades)','uso',60,106270,0,30,[]],
+ ['ageLOC Tru Face Uplifting Rich Cream','uso',55,99630,0,60,[]],
+ ['Refill Tru Face Uplifting Rich Cream (Suscripción)','uso',45,80400,89670,60,[]],
+ ['ageLOC Boost Activating Serum','uso',35,71740,0,60,[]],
+ ['ageLOC Galvanic Spa Facial Gels','uso',33,55090,0,75,[]],
+ ['Limpiador ageLOC LumiSpa Piel Normal/Combo','uso',25,43750,0,60,[]],
+ ['Crema en gel con HA & Vitamina A','uso',17,31000,0,60,[]],
+ ['Nu Skin AHA Glycolic Cleanser','uso',17,31000,0,60,[]],
+ ['Nu Skin Suero de Niacinamida','uso',19,35300,0,60,[]],
+ ['Nutricentials In Balance pH Balance Toner','uso',18,36040,0,60,[]],
+ ['Nutricentials Day Dream Protective Cream SPF 35','uso',29,46030,0,60,[]],
+ ['Sunright Solar Screen FPS 50+','uso',30,49820,0,60,[]],
+ ['Epoch Cica Balm','uso',16,30560,0,60,[]],
+ ['Scion Brightening Skin Lotion','uso',18,36470,0,60,[]],
+ ['Scion Brightening Roll On','uso',5,9760,0,60,[]],
+ ['AP 24 Whitening Fluoride Toothpaste','uso',11,24580,0,45,[]],
+ ['Beauty Focus Collagen+ Citrus','uso',50,117530,0,30,[]],
+ ['Optimum Omega','uso',21,48780,0,30,[]],
+ ['LifePak','uso',40,79040,0,30,[]]
+];
+function buildCatalog(){
+  const list=CAT.map((r,i)=>({id:'k'+pad(i+1),name:r[0],tipo:r[1],sv:r[2],precio:r[3],lista:r[4],pfecha:CAT_FECHA,days:r[5]||30,repone:[]}));
+  const byN={};list.forEach(p=>{byN[p.name]=p});
+  CAT.forEach((r,i)=>{list[i].repone=(r[6]||[]).map(x=>({id:byN[x[0]]?byN[x[0]].id:'',cant:x[1]})).filter(x=>x.id)});
+  return list;
+}
+const isUso=p=>!p||!p.tipo||p.tipo==='uso';
+const OLD_MAP={'LumiSpa (gel)':'Limpiador ageLOC LumiSpa Piel Normal/Combo','Boost (serum)':'ageLOC Boost Activating Serum','Galvánica':'ageLOC Galvanic Spa Facial Gels','Colágeno':'Beauty Focus Collagen+ Citrus','Omega':'Optimum Omega','LifePack':'LifePak','Pasta dental':'AP 24 Whitening Fluoride Toothpaste'};
+function upgradeCfg(cfg,contacts){
+  if(cfg.catV>=2)return [];
+  const old=cfg.products||[],fresh=buildCatalog(),ren={},byN={};
+  fresh.forEach(p=>{byN[p.name]=p});
+  const keep=[];
+  old.forEach(o=>{
+    const tgt=OLD_MAP[o.name];
+    if(tgt&&byN[tgt]){byN[tgt].days=o.days||byN[tgt].days;ren[o.name]=tgt}
+    else if(byN[o.name]){byN[o.name].days=o.days||byN[o.name].days}
+    else keep.push({id:o.id,name:o.name,tipo:'uso',sv:0,precio:0,lista:0,pfecha:'',days:o.days||30,repone:[]});
+  });
+  cfg.products=fresh.concat(keep);cfg.catV=2;
+  const changed=[];
+  contacts.forEach(c=>{let ch=false;(c.compras||[]).forEach(b=>{if(ren[b.producto]){b.producto=ren[b.producto];ch=true}});if(ch)changed.push(c)});
+  return changed;
+}
+
 /* ---------- datos por defecto ---------- */
 const TIPOS=[['frio','Contacto en frío'],['pregunto','Preguntó alguna vez'],['interesada','Interesada'],['clienta','Clienta'],['socia','Socia']];
 const tipoName=k=>(TIPOS.find(t=>t[0]===k)||[0,k])[1];
 const RESULTADOS=['Le gustó','Tiene dudas','Quiere reponer','No respondió','No le interesa','Otro'];
 const DEFAULT_CFG={
-  products:[
-    {id:'p1',name:'LumiSpa (gel)',days:60},{id:'p2',name:'Boost (serum)',days:60},
-    {id:'p3',name:'Galvánica',days:75},{id:'p4',name:'WellSpa',days:75},
-    {id:'p5',name:'Colágeno',days:30},{id:'p6',name:'Nu Bi',days:30},
-    {id:'p7',name:'Omega',days:30},{id:'p8',name:'LifePack',days:30},
-    {id:'p9',name:'Desodorante',days:45},{id:'p10',name:'Pasta dental',days:45}],
+  catV:2,
+  products:buildCatalog(),
   actions:['Contactar a alguien nuevo','Hablar del producto','Hacer un seguimiento','Ofrecer una reposición o promo','Subir contenido','Escribirle a una socia','Cargar los datos del día'],
   checks:{},goals:{},
   ranks:[
@@ -145,12 +222,14 @@ const DEFAULT_CFG={
     repo:'Hola {nombre}, ¿cómo estás? Por las fechas, tu {producto} ya debería estar terminándose. ¿Querés que te prepare la reposición para que no cortes el tratamiento?',
     seguimiento:'Hola {nombre}, ¿cómo te está yendo con {producto}? Me gustaría saber cómo lo sentís y si necesitás que te ayude con algo.',
     frio:'Hola {nombre}, soy Pato. Acompaño a mujeres en el cuidado de su piel y su bienestar. Si te interesa, te cuento en pocas líneas cómo trabajo.',
-    promo:'Hola {nombre}, tengo una promoción vigente en {producto} y pensé en vos. ¿Querés que te cuente los detalles?'}
+    promo:'Hola {nombre}, tengo una promoción vigente en {producto} y pensé en vos. ¿Querés que te cuente los detalles?',
+    precio:'Hola {nombre}, el {producto} tiene un valor de {precio}. ¿Querés que te lo prepare?'}
 };
 const clone=o=>JSON.parse(JSON.stringify(o));
 function mergeCfg(stored){
   const c=clone(DEFAULT_CFG);if(!stored)return c;
   for(const k of Object.keys(stored))c[k]=(stored[k]&&typeof stored[k]==='object'&&!Array.isArray(stored[k])&&c[k]&&typeof c[k]==='object'&&!Array.isArray(c[k]))?Object.assign({},c[k],stored[k]):stored[k];
+  if(!stored.catV)c.catV=0;
   return c;
 }
 
@@ -158,7 +237,7 @@ function mergeCfg(stored){
 const SUPABASE_URL='https://bepxjdrdrgvchvixsjof.supabase.co';
 const SUPABASE_KEY='sb_publishable_hAgm5uY3g18G1lRNoaB18g_4BsFrJ9z';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const S={cfg:clone(DEFAULT_CFG),contacts:[],mode:'cargando',tab:'hoy',filter:{q:'',tipo:'',prod:''},user:null};
+const S={cfg:clone(DEFAULT_CFG),contacts:[],mode:'cargando',tab:'hoy',filter:{q:'',tipo:'',prod:''},pf:{q:'',tipo:''},user:null};
 const chain={};
 function queue(key,fn){chain[key]=(chain[key]||Promise.resolve()).then(fn).catch(e=>{console.error(e);toast('No se pudo guardar. Revisá tu conexión y probá de nuevo.')});return chain[key]}
 function saveCfg(){
@@ -168,6 +247,15 @@ function saveCfg(){
 function saveContact(c){
   if(!S.user)return Promise.resolve();
   return queue(c.id,async()=>{const r=await sb.from('contacts').upsert({id:c.id,user_id:S.user.id,data:clone(c)},{onConflict:'user_id,id'});if(r.error)throw r.error});
+}
+function saveContacts(list){
+  if(!S.user||!list||!list.length)return Promise.resolve();
+  return queue('batch'+Date.now()+Math.random(),async()=>{
+    for(let i=0;i<list.length;i+=200){
+      const rows=list.slice(i,i+200).map(c=>({id:c.id,user_id:S.user.id,data:clone(c)}));
+      const r=await sb.from('contacts').upsert(rows,{onConflict:'user_id,id'});if(r.error)throw r.error;
+    }
+  });
 }
 function removeContact(id){
   S.contacts=S.contacts.filter(c=>c.id!==id);
@@ -183,6 +271,10 @@ async function loadAll(){
   if(c.error||g.error){toast('No pude cargar tus datos. Revisá tu conexión y recargá.');return false}
   S.contacts=(c.data||[]).map(r=>r.data);
   S.cfg=mergeCfg(g.data?clone(g.data.data):null);
+  if(!(S.cfg.catV>=2)){
+    const ch=upgradeCfg(S.cfg,S.contacts);
+    await saveContacts(ch);await saveCfg();
+  }
   return true;
 }
 async function enter(user){
@@ -206,16 +298,38 @@ async function boot(){
 <script>
 /* ---------- lógica de negocio ---------- */
 const prod=n=>S.cfg.products.find(p=>p.name===n);
+const bn=(a,b)=>a.name.localeCompare(b.name,'es');
+const prodById=id=>S.cfg.products.find(p=>p.id===id);
+const money=n=>n>0?'$'+Math.round(n).toLocaleString('es-AR'):'—';
+const ALIAS=[['colageno','Beauty Focus Collagen+ Citrus'],['collagen','Beauty Focus Collagen+ Citrus'],['omega','Optimum Omega'],['lifepack','LifePak'],['lifepak','LifePak'],['boost','ageLOC Boost Activating Serum'],['lumi','Limpiador ageLOC LumiSpa Piel Normal/Combo'],['galvanic','ageLOC Galvanic Spa Facial Gels'],['pasta','AP 24 Whitening Fluoride Toothpaste'],['ap24','AP 24 Whitening Fluoride Toothpaste']];
 function matchProduct(txt){
-  const n=norm(txt);if(n.length<3)return null;
-  for(const p of S.cfg.products){const k=norm(p.name.replace(/\(.*?\)/g,''));if(k.length>=4&&(n.includes(k)||n.startsWith(k.slice(0,4))))return p}
+  const n=norm(String(txt||'').replace(/\s*x\s*\d+\s*$/i,''));if(n.length<3)return null;
+  const ps=S.cfg.products;
+  let p=ps.find(x=>norm(x.name)===n);if(p)return p;
+  p=ps.find(x=>{const k=norm(x.name.replace(/\(.*?\)/g,''));return k.length>=4&&(n.includes(k)||(n.length>=5&&k.includes(n)))});if(p)return p;
+  for(const a of ALIAS){if(n.startsWith(a[0])){const q=ps.find(x=>x.name===a[1]);if(q)return q}}
   return null;
 }
 function repoDate(p){
   if(p.repo)return p.repo;
   const pr=prod(p.producto),base=p.recibido||p.fecha;
-  if(!pr||!base)return '';
-  return addDays(base,Math.round(pr.days*(p.cant||1)));
+  if(!pr||!base||!isUso(pr))return '';
+  return addDays(base,Math.round((pr.days||30)*(p.cant||1)));
+}
+/* Lo que hay que reponer por cada compra: un producto de uso se repone a sí mismo; un kit o tecnología repone los productos que tiene cargados */
+function repoItems(c){
+  const out=[];
+  (c.compras||[]).forEach(b=>{
+    const pr=prod(b.producto),base=b.recibido||b.fecha;
+    if(!pr||(!base&&!b.repo))return;
+    const units=b.cant||1;
+    const targets=isUso(pr)?[{p:pr,cant:1}]:(pr.repone||[]).map(r=>({p:prodById(r.id),cant:r.cant||1})).filter(t=>t.p);
+    targets.forEach(t=>{
+      const d=b.repo||addDays(base,Math.round((t.p.days||30)*t.cant*units));
+      out.push({b,name:t.p.name,pr:t.p,units:t.cant*units,d,skip:!!b.skip});
+    });
+  });
+  return out;
 }
 const firstName=c=>(c.nombre||'').trim().split(/\s+/)[0]||'';
 const lastBuy=c=>[...(c.compras||[])].sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''))[0];
@@ -224,26 +338,66 @@ function tpl(key,c,producto){
   const pn=producto||(lb&&lb.producto)||'tu producto';
   return (S.cfg.templates[key]||'').replace(/\{nombre\}/g,firstName(c)).replace(/\{producto\}/g,pn);
 }
-function consumes(c){const s=new Set();(c.compras||[]).forEach(p=>{if(!p.skip)s.add(p.producto)});return [...s]}
+function consumes(c){
+  const s=new Set();
+  (c.compras||[]).forEach(b=>{
+    if(b.skip)return;const pr=prod(b.producto);
+    if(!pr||isUso(pr))s.add(b.producto);
+    else(pr.repone||[]).forEach(r=>{const t=prodById(r.id);if(t)s.add(t.name)});
+  });
+  return [...s];
+}
 function dueRepos(today,horizon){
   const out=[];
   for(const c of S.contacts){
     if(c.seg&&c.seg.nomas)continue;
     if(c.tipo!=='clienta'&&c.tipo!=='socia')continue;
     const latest={};
-    for(const p of c.compras||[]){
-      const k=p.producto,cur=latest[k];
-      const key=(p.recibido||p.fecha||'')+'|'+(p.fecha||'');
-      if(!cur||key>cur.key)latest[k]={p,key};
+    for(const it of repoItems(c)){
+      const k=it.name,key=(it.b.recibido||it.b.fecha||'')+'|'+(it.b.fecha||'');
+      if(!latest[k]||key>latest[k].key)latest[k]={it,key};
     }
     for(const k of Object.keys(latest)){
-      const p=latest[k].p;if(p.skip)continue;
-      const d=repoDate(p);if(!d)continue;
-      if(d<=addDays(today,horizon))out.push({c,p,d,late:diff(today,d)});
+      const it=latest[k].it;if(it.skip)continue;
+      if(it.d<=addDays(today,horizon))out.push({c,p:it.b,name:it.name,units:it.units,pts:Math.round((Number(it.pr.sv)||0)*it.units),d:it.d,late:diff(today,it.d)});
     }
   }
   return out.sort((a,b)=>a.d.localeCompare(b.d));
 }
+/* puntos, etapas y negocio */
+const TIPO_ORDER=['frio','pregunto','interesada','clienta','socia'];
+function ptsFor(pr,units){return Math.round((Number(pr&&pr.sv)||0)*units)}
+function addPtsLog(fecha,pts,nota,bid,cid){
+  if(!(pts>0))return;
+  const k=ymOf(fecha||TODAY());
+  const g=S.cfg.goals[k]=S.cfg.goals[k]||{meta:0,log:[]};g.log=g.log||[];
+  g.log.push({f:fecha||TODAY(),tipo:'directo',pts,nota,bid,cid});
+}
+function delPtsByBuy(bid){Object.keys(S.cfg.goals).forEach(k=>{const g=S.cfg.goals[k];if(g&&g.log)g.log=g.log.filter(e=>e.bid!==bid)})}
+function newBuy(c,producto,fecha,recibido,cant){
+  const pr=prod(producto);
+  const b={id:'b'+uid().slice(1),producto,fecha,recibido:recibido||'',cant,repo:'',pts:ptsFor(pr,cant)};
+  c.compras=c.compras||[];c.compras.push(b);
+  addPtsLog(fecha,b.pts,(c.nombre||'')+' · '+producto+(cant>1?' ×'+cant:''),b.id,c.id);
+  return b;
+}
+function setTipo(c,t,f){
+  c.etapas=c.etapas||[];
+  if(!c.etapas.length)c.etapas.push({k:c.tipo||'frio',f:c.cuando||f||TODAY()});
+  if(c.tipo!==t){c.etapas.push({k:t,f:f||TODAY()});c.tipo=t}
+}
+const NEG=[['invitada','Invitada a presentación'],['llamada','Hizo la llamada'],['socia','Se sumó como socia'],['noint','No le interesó']];
+const NEG_ORDER=['invitada','llamada','socia'];
+const negName=k=>(NEG.find(n=>n[0]===k)||[0,''])[1];
+function setNeg(c,k,f){
+  f=f||TODAY();c.negHist=c.negHist||[];c.negHist.push({k,f});c.neg=k;
+  if(k==='socia')setTipo(c,'socia',f);
+}
+function negReached(c,k){const i=NEG_ORDER.indexOf(k);return (c.negHist||[]).some(x=>{const j=NEG_ORDER.indexOf(x.k);return j>=0&&j>=i})}
+const negFirst=c=>{const h=(c.negHist||[]).map(x=>x.f).sort();return h.length?h[0]:''};
+const cDate=c=>c.cuando||((c.etapas&&c.etapas[0])?c.etapas[0].f:'')||'';
+const pct=(a,b)=>b?Math.round(a/b*100)+'%':'—';
+function lastMonths(n){const out=[];let k=ymOf(TODAY());for(let i=0;i<n;i++){out.unshift(k);k=prevMonth(k)}return out}
 function dueSeg(today){
   return S.contacts.filter(c=>c.seg&&c.seg.next&&!c.seg.pausa&&!c.seg.nomas&&c.seg.next<=today)
     .sort((a,b)=>a.seg.next.localeCompare(b.seg.next));
@@ -277,7 +431,9 @@ function viewHoy(){
   const t=TODAY(),n=S.cfg.actions.length;
   const checks=(S.cfg.checks[t]||[]);const doneN=S.cfg.actions.filter((_,i)=>checks[i]).length;
   const segs=dueSeg(t),repos=dueRepos(t,7),bds=birthdays(t,7);
-  let h='<section class="card"><div class="sec-title"><h2>Mis '+n+' acciones de hoy</h2><span class="chip gold num">Racha: '+streak()+' '+(streak()===1?'día':'días')+'</span></div>';
+  const mt=monthTotals(ymOf(t));
+  let h='<section class="card"><div class="row sp"><div><div class="muted">Puntos de '+monthLabel(ymOf(t))+'</div><div class="big num">'+mt.total+'<span class="muted" style="font-size:16px"> / '+(mt.meta||'—')+'</span></div></div><button class="btn" data-act="buy">+ Registrar compra</button></div></section>';
+  h+='<section class="card"><div class="sec-title"><h2>Mis '+n+' acciones de hoy</h2><span class="chip gold num">Racha: '+streak()+' '+(streak()===1?'día':'días')+'</span></div>';
   S.cfg.actions.forEach((a,i)=>{h+='<label class="check"><input type="checkbox" data-act="chk" data-i="'+i+'"'+(checks[i]?' checked':'')+'><span>'+esc(a)+'</span></label>'});
   h+='<div class="bar" style="margin-top:8px"><i style="width:'+(n?doneN/n*100:0)+'%"></i></div><div class="muted num" style="margin-top:4px">'+doneN+' de '+n+' hechas</div></section>';
 
@@ -295,8 +451,8 @@ function viewHoy(){
   if(!repos.length)h+='<div class="empty">Nadie necesita reposición en los próximos 7 días.</div>';
   repos.forEach(r=>{
     h+='<div class="item"><div class="row sp"><b>'+esc(r.c.nombre)+'</b><span class="chip '+(r.late>0?'bad':r.late===0?'warn':'')+'">'+(r.late>0?'vencida hace '+r.late+' d':r.late===0?'hoy':'en '+(-r.late)+' d')+'</span></div>'+
-      '<div class="muted">'+esc(r.p.producto)+(r.p.cant>1?' ×'+r.p.cant:'')+' · compró '+fmt(r.p.fecha)+' · se termina '+fmt(r.d)+'</div>'+
-      '<div class="row"><button class="btn sm" data-act="msg" data-id="'+r.c.id+'" data-k="repo" data-p="'+esc(r.p.producto)+'">Ofrecer reposición</button>'+
+      '<div class="muted">'+esc(r.name)+(r.units>1?' ×'+r.units:'')+(r.p.producto!==r.name?' (por '+esc(r.p.producto)+')':'')+' · compró '+fmt(r.p.fecha)+' · se termina '+fmt(r.d)+(r.pts>0?' · +'+r.pts+' pts':'')+'</div>'+
+      '<div class="row"><button class="btn sm" data-act="msg" data-id="'+r.c.id+'" data-k="repo" data-p="'+esc(r.name)+'">Ofrecer reposición</button>'+
       '<button class="btn sm ghost" data-act="repoPos" data-id="'+r.c.id+'" data-pid="'+r.p.id+'">Posponer 7 d</button>'+
       '<button class="btn sm ghost" data-act="repoSkip" data-id="'+r.c.id+'" data-pid="'+r.p.id+'">Ya no repone</button></div></div>';
   });
@@ -318,7 +474,8 @@ function viewHoy(){
 function modal(html){$('#modal').innerHTML='<div class="modal-bg" data-act="bg"><div class="modal" role="dialog" aria-modal="true">'+html+'</div></div>'}
 function closeModal(){$('#modal').innerHTML='';S.editing=null}
 const byId=id=>S.contacts.find(c=>c.id===id);
-const optProds=sel=>S.cfg.products.map(p=>'<option value="'+esc(p.name)+'"'+(p.name===sel?' selected':'')+'>'+esc(p.name)+'</option>').join('');
+const optProds=sel=>S.cfg.products.filter(isUso).slice().sort(bn).map(p=>'<option value="'+esc(p.name)+'"'+(p.name===sel?' selected':'')+'>'+esc(p.name)+'</option>').join('');
+const prodDatalist=()=>'<datalist id="dl-prods">'+S.cfg.products.slice().sort(bn).map(p=>'<option value="'+esc(p.name)+'">'+(p.sv?p.sv+' SV':'')+'</option>').join('')+'</datalist>';
 const optTipos=sel=>TIPOS.map(t=>'<option value="'+t[0]+'"'+(t[0]===sel?' selected':'')+'>'+t[1]+'</option>').join('');
 const bdShow=m=>m?m.split('-')[1]+'/'+m.split('-')[0]:'';
 
@@ -357,6 +514,7 @@ function openEdit(c,isNew){
    '<label>Tipo<select id="f-tipo">'+optTipos(c.tipo)+'</select></label>'+
    '<label>WhatsApp (con código de país)<input id="f-wapp" inputmode="tel" placeholder="54911…" value="'+esc(c.wapp)+'"></label>'+
    '<label>Instagram<input id="f-ig" placeholder="@usuario" value="'+esc(c.ig)+'"></label>'+
+   '<label>Mail<input id="f-mail" type="email" inputmode="email" value="'+esc(c.mail)+'"></label>'+
    '<label>Cumpleaños (día/mes)<input id="f-cumple" placeholder="15/03" value="'+esc(bdShow(c.cumple))+'"></label>'+
    '<label>Cómo la contacté<input id="f-como" placeholder="DM, WhatsApp, mail…" value="'+esc(c.como)+'"></label>'+
    '<label>Cuándo<input id="f-cuando" type="date" value="'+esc(c.cuando)+'"></label>'+
@@ -365,12 +523,13 @@ function openEdit(c,isNew){
   if(!isNew){
     h+='<div class="card"><h3>Compras</h3>';
     if(!buys.length)h+='<div class="empty">Todavía no hay compras.</div>';
-    buys.forEach(p=>{h+='<div class="item"><div class="row sp"><b>'+esc(p.producto)+(p.cant>1?' ×'+p.cant:'')+'</b><button class="btn sm bad" data-act="delBuy" data-pid="'+p.id+'">Quitar</button></div><div class="muted num">Compró '+fmt(p.fecha)+(p.recibido?' · recibió '+fmt(p.recibido):'')+' · repone '+fmt(repoDate(p))+(p.skip?' · no repone':'')+'</div></div>'});
-    h+='<div class="muted" style="margin-top:8px">Agregar compra</div><div class="grid2"><label>Producto<select id="ap-prod">'+optProds()+'</select></label>'+
+    buys.forEach(p=>{h+='<div class="item"><div class="row sp"><b>'+esc(p.producto)+(p.cant>1?' ×'+p.cant:'')+'</b><button class="btn sm bad" data-act="delBuy" data-pid="'+p.id+'">Quitar</button></div><div class="muted num">Compró '+fmt(p.fecha)+(p.recibido?' · recibió '+fmt(p.recibido):'')+(repoDate(p)?' · repone '+fmt(repoDate(p)):'')+(p.pts?' · '+p.pts+' pts':'')+(p.skip?' · no repone':'')+'</div></div>'});
+    h+='<div class="muted" style="margin-top:8px">Agregar compra</div><div class="grid2"><label>Producto<input id="ap-prod" list="dl-prods" placeholder="Escribí para buscar" autocomplete="off"></label>'+prodDatalist()+
       '<label>Fecha de compra<input id="ap-fecha" type="date" value="'+TODAY()+'"></label>'+
       '<label>Recibió (opcional)<input id="ap-rec" type="date"></label>'+
       '<label>Unidades (pack)<input id="ap-cant" type="number" min="1" value="1" inputmode="numeric"></label></div>'+
       '<div class="row" style="margin-top:8px"><button class="btn sm" data-act="addBuy">Agregar compra</button></div></div>';
+    h+=negCard(c);
     h+='<div class="card"><h3>Seguimiento</h3><div class="muted">'+(seg.nomas?'No contactar más.':seg.pausa?'En pausa.':seg.next?'Próximo: '+fmt(seg.next):'Sin fecha de seguimiento.')+'</div><div class="row" style="margin-top:8px">'+
       '<button class="btn sm ghost" data-act="seg" data-id="'+c.id+'">Registrar seguimiento</button>'+((seg.pausa||seg.nomas)?'<button class="btn sm ghost" data-act="reactivar">Reactivar</button>':'')+'</div></div>';
   }
@@ -380,7 +539,7 @@ function openEdit(c,isNew){
 }
 function collect(c){
   const v=id=>{const e=$('#'+id);return e?e.value.trim():''};
-  c.nombre=v('f-nombre');c.tipo=v('f-tipo')||c.tipo;c.wapp=v('f-wapp');c.ig=v('f-ig');
+  c.nombre=v('f-nombre');c.tipo=v('f-tipo')||c.tipo;c.wapp=v('f-wapp');c.ig=v('f-ig');c.mail=v('f-mail');
   c.cumple=parseBirthday(v('f-cumple'));c.como=v('f-como');c.cuando=v('f-cuando');c.notas=v('f-notas');
   if($('#f-rango'))c.rango=v('f-rango');
   return c;
@@ -407,27 +566,27 @@ function filtered(){
   return S.contacts.filter(c=>{
     if(f.tipo&&c.tipo!==f.tipo)return false;
     if(f.prod&&!consumes(c).includes(f.prod))return false;
-    if(q&&!(norm(c.nombre).includes(q)||norm(c.ig).includes(q)||norm(c.wapp).includes(q)))return false;
+    if(q&&!(norm(c.nombre).includes(q)||norm(c.ig).includes(q)||norm(c.wapp).includes(q)||norm(c.mail).includes(q)))return false;
     return true;
   }).sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'','es'));
 }
 function listHtml(){
-  const list=filtered();let h='';
+  const list=filtered();let h='';const allRep=dueRepos(TODAY(),3650);
   const head='<div class="muted num" style="margin:10px 0 2px">'+list.length+' de '+S.contacts.length+' contactos'+(S.filter.prod&&list.length?' <button class="btn sm" style="margin-left:8px" data-act="promo">Mensaje de promo para este grupo</button>':'')+'</div>';
   if(!list.length)return head+'<div class="empty">No hay contactos con ese filtro.</div>';
   list.forEach(c=>{
-    const rp=dueRepos(TODAY(),3650).filter(r=>r.c.id===c.id).sort((a,b)=>a.d.localeCompare(b.d))[0];
+    const rp=allRep.filter(r=>r.c.id===c.id).sort((a,b)=>a.d.localeCompare(b.d))[0];
     const seg=c.seg||{};
     h+='<div class="item"><div class="row sp"><b>'+esc(c.nombre)+'</b><span class="chip">'+esc(tipoName(c.tipo))+'</span></div>'+
      '<div class="row">'+consumes(c).map(p=>'<span class="chip gold">'+esc(p)+'</span>').join('')+'</div>'+
-     '<div class="muted num">'+(seg.nomas?'No contactar':seg.pausa?'En pausa':seg.next?'Próximo seguimiento: '+fmt(seg.next):'Sin seguimiento')+(rp?' · repone '+fmt(rp.d)+' ('+esc(rp.p.producto)+')':'')+'</div>'+
+     '<div class="muted num">'+(seg.nomas?'No contactar':seg.pausa?'En pausa':seg.next?'Próximo seguimiento: '+fmt(seg.next):'Sin seguimiento')+(rp?' · repone '+fmt(rp.d)+' ('+esc(rp.name)+')':'')+'</div>'+
      '<div class="row"><button class="btn sm ghost" data-act="edit" data-id="'+c.id+'">Abrir ficha</button><button class="btn sm ghost" data-act="msg" data-id="'+c.id+'" data-k="'+(c.tipo==='clienta'||c.tipo==='socia'?'seguimiento':'frio')+'">Escribirle</button></div></div>';
   });
   return head+h;
 }
 function viewContactos(){
   const f=S.filter;
-  return '<section class="card"><div class="row sp"><h2>Contactos</h2><button class="btn" data-act="newC">+ Nuevo</button></div>'+
+  return '<section class="card"><div class="row sp"><h2>Contactos</h2><div class="row"><button class="btn ghost" data-act="quick">Carga rápida</button><button class="btn" data-act="newC">+ Nuevo</button></div></div>'+
     '<div class="grid2" style="margin-top:8px"><input id="fq" type="search" placeholder="Buscar por nombre, IG o WhatsApp" value="'+esc(f.q)+'" aria-label="Buscar">'+
     '<select id="ftipo" aria-label="Tipo"><option value="">Todos los tipos</option>'+optTipos(f.tipo)+'</select>'+
     '<select id="fprod" aria-label="Producto"><option value="">Todos los productos</option>'+optProds(f.prod)+'</select></div><div id="list">'+listHtml()+'</div></section>';
@@ -435,16 +594,25 @@ function viewContactos(){
 </script>
 <script>
 /* ---------- vista PRODUCTOS ---------- */
+const TP=[['uso','Producto de uso'],['tecnologia','Tecnología'],['kit','Kit'],['accesorio','Accesorio']];
+const tpName=k=>(TP.find(t=>t[0]===(k||'uso'))||[0,'Producto de uso'])[1];
+function prodListHtml(){
+  const f=S.pf,q=norm(f.q),order={uso:0,tecnologia:1,kit:2,accesorio:3};
+  const list=S.cfg.products.filter(p=>(!f.tipo||(p.tipo||'uso')===f.tipo)&&(!q||norm(p.name).includes(q)))
+    .sort((a,b)=>(order[a.tipo||'uso']-order[b.tipo||'uso'])||bn(a,b));
+  if(!list.length)return '<div class="empty">No hay productos con ese filtro.</div>';
+  return list.map(p=>{
+    const rep=(p.repone||[]).map(r=>{const t=prodById(r.id);return t?esc(t.name)+(r.cant>1?' ×'+r.cant:''):''}).filter(Boolean);
+    return '<div class="item"><div class="row sp"><b>'+esc(p.name)+'</b><span class="chip '+((p.tipo||'uso')==='uso'?'':'gold')+'">'+tpName(p.tipo)+'</span></div>'+
+     '<div class="muted num">'+(p.sv?p.sv+' SV':'sin puntos')+' · '+(p.precio?money(p.precio):'sin precio')+((p.tipo||'uso')==='uso'?' · dura '+(p.days||30)+' d':'')+'</div>'+
+     (rep.length?'<div class="muted">Repone: '+rep.join(', ')+'</div>':'')+
+     '<div class="row"><button class="btn sm ghost" data-act="editProd" data-pid="'+p.id+'">Editar</button><button class="btn sm" data-act="priceMsg" data-pid="'+p.id+'">Mensaje de precio</button></div></div>';
+  }).join('');
+}
 function viewProductos(){
-  const t=TODAY(),promos=(S.cfg.promos||[]);
-  let h='<section class="card"><h2>Catálogo</h2><div class="muted">Días que dura una unidad. Un pack de 3 se calcula como 3 × esos días.</div>';
-  S.cfg.products.forEach(p=>{
-    const n=S.contacts.filter(c=>consumes(c).includes(p.name)).length;
-    h+='<div class="item"><div class="grid2"><label>Producto<input data-prod="'+p.id+'" data-f="name" value="'+esc(p.name)+'"></label><label>Días por unidad<input type="number" min="1" inputmode="numeric" data-prod="'+p.id+'" data-f="days" value="'+p.days+'"></label></div>'+
-      '<div class="row sp"><span class="muted num">'+n+' '+(n===1?'contacto lo consume':'contactos lo consumen')+'</span><button class="btn sm bad" data-act="delProd" data-pid="'+p.id+'">Quitar</button></div></div>';
-  });
-  h+='<div class="item"><div class="grid2"><label>Nuevo producto<input id="np-name" placeholder="Nombre"></label><label>Días por unidad<input id="np-days" type="number" min="1" value="30" inputmode="numeric"></label></div><div><button class="btn sm" data-act="addProd">Agregar producto</button></div></div></section>';
-
+  const t=TODAY(),promos=(S.cfg.promos||[]),f=S.pf;
+  let h='<section class="card"><div class="row sp"><h2>Catálogo</h2><button class="btn" data-act="newProd">+ Nuevo</button></div><div class="muted">'+S.cfg.products.length+' productos. SV = puntos por unidad. Tocá Editar para cambiar puntos, precio, días o qué repone.</div>'+
+    '<div class="grid2" style="margin-top:8px"><input id="pq" type="search" placeholder="Buscar producto" value="'+esc(f.q)+'" aria-label="Buscar producto"><select id="pt" aria-label="Tipo"><option value="">Todos los tipos</option>'+TP.map(x=>'<option value="'+x[0]+'"'+(f.tipo===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select></div><div id="plist">'+prodListHtml()+'</div></section>';
   h+='<section class="card"><h2>Promos</h2><div class="muted">Cargá una promo con su vencimiento y contactá solo a quienes consumen ese producto.</div>';
   const act=promos.filter(p=>p.vence>=t);
   if(!act.length)h+='<div class="empty">No hay promos vigentes.</div>';
@@ -457,6 +625,31 @@ function viewProductos(){
   return h;
 }
 
+function sugHtml(falta,left){
+  const t=TODAY();
+  const reps=dueRepos(t,Math.max(left,0)).filter(r=>r.pts>0);
+  const sum=reps.reduce((a,r)=>a+r.pts,0),resto=Math.max(falta-sum,0);
+  let h='<section class="card"><h3>Para llegar a tu meta</h3><div class="muted">Te faltan '+falta+' puntos. Son sugerencias calculadas con tus clientas y tu catálogo.</div>'+
+    '<div class="sec-title" style="margin-top:10px"><b>Reposiciones que vencen este mes</b><span class="chip gold num">'+(reps.length?'+'+sum+' pts':'0')+'</span></div>';
+  if(!reps.length)h+='<div class="empty">Nadie tiene una reposición para lo que queda del mes.</div>';
+  reps.slice(0,8).forEach(r=>{
+    h+='<div class="item"><div class="row sp"><span><b>'+esc(r.c.nombre)+'</b> · '+esc(r.name)+(r.units>1?' ×'+r.units:'')+'</span><span class="chip num">+'+r.pts+'</span></div>'+
+      '<div class="row"><button class="btn sm" data-act="msg" data-id="'+r.c.id+'" data-k="repo" data-p="'+esc(r.name)+'">Ofrecer reposición</button></div></div>';
+  });
+  if(reps.length>8)h+='<div class="muted">y '+(reps.length-8)+' más.</div>';
+  if(resto>0){
+    h+='<div style="margin-top:10px"><b>Para cubrir los '+resto+' puntos que quedarían</b></div>';
+    const uso=S.cfg.products.filter(p=>isUso(p)&&p.sv>0),cnt={};
+    S.contacts.forEach(c=>(c.compras||[]).forEach(b=>{cnt[b.producto]=(cnt[b.producto]||0)+(b.cant||1)}));
+    let fav=uso.filter(p=>cnt[p.name]).sort((a,b)=>cnt[b.name]-cnt[a.name]).slice(0,3);
+    if(!fav.length)fav=uso.filter(p=>['Beauty Focus Collagen+ Citrus','ageLOC Boost Activating Serum','Tru Face Essence Ultra (30 unidades)'].indexOf(p.name)>=0);
+    fav.forEach(p=>{const n=Math.ceil(resto/p.sv);h+='<div class="item"><div class="row sp"><span>'+n+' × '+esc(p.name)+'</span><span class="chip num">'+Math.round(n*p.sv)+' pts</span></div></div>'});
+    S.cfg.products.filter(p=>p.tipo==='kit'&&p.sv>=resto).sort((a,b)=>a.sv-b.sv).slice(0,2).forEach(p=>{
+      h+='<div class="item"><div class="row sp"><span>1 × '+esc(p.name)+'</span><span class="chip gold num">'+p.sv+' pts</span></div></div>';
+    });
+  }else h+='<div class="muted" style="margin-top:8px">Si todas esas clientas reponen, llegás a tu meta.</div>';
+  return h+'</section>';
+}
 /* ---------- vista PUNTOS ---------- */
 function viewPuntos(){
   const t=TODAY(),k=S.ym||ymOf(t),isCur=k===ymOf(t);
@@ -478,6 +671,7 @@ function viewPuntos(){
    '<div class="grid2 num" style="margin-top:10px"><div><div class="muted">Volumen directo</div><b>'+m.dir+'</b></div><div><div class="muted">Volumen grupal</div><b>'+m.grp+'</b></div>'+
    (meta?'<div><div class="muted">Te faltan</div><b>'+falta+'</b></div>':'')+(meta&&isCur&&left>0&&falta>0?'<div><div class="muted">Ritmo necesario</div><b>'+Math.ceil(falta/left)+' por día ('+left+' d)</b></div>':'')+'</div></section>';
 
+  if(isCur&&meta&&falta>0)h+=sugHtml(falta,left);
   h+='<section class="card"><h3>Sumar puntos</h3><div class="grid2" style="margin-top:8px"><label>Tipo<select id="pt-tipo"><option value="directo">Directo (mis ventas)</option><option value="grupal">Grupal (socias)</option></select></label><label>Puntos<input id="pt-pts" type="number" inputmode="numeric" placeholder="0"></label></div>'+
     '<label style="margin-top:8px">Nota (opcional)<input id="pt-nota" placeholder="Ej: pedido de Ana"></label><div style="margin-top:8px"><button class="btn sm" data-act="addPts">Sumar</button></div>';
   const log=(g.log||[]).map((e,i)=>({e,i})).reverse().slice(0,8);
@@ -513,6 +707,39 @@ function bars(rows,unit){
   const mx=Math.max(...rows.map(r=>r[1]),1);
   return rows.map(r=>'<div class="item" style="gap:3px;padding:6px 0"><div class="row sp"><span>'+esc(r[0])+'</span><span class="num">'+r[1]+(unit||'')+'</span></div><div class="bar"><i style="width:'+(r[1]/mx*100)+'%"></i></div></div>').join('');
 }
+function statsContactos(){
+  const t=TODAY(),ms=lastMonths(6),perD={};
+  S.contacts.forEach(c=>{const d=cDate(c);if(d)perD[d]=(perD[d]||0)+1});
+  const days=[];for(let i=13;i>=0;i--)days.push(addDays(t,-i));
+  const buyer=c=>c.tipo==='clienta'||c.tipo==='socia'||(c.compras||[]).length>0;
+  let rows='';
+  ms.forEach(m=>{
+    const l=S.contacts.filter(c=>(cDate(c)||'').slice(0,7)===m);if(!l.length)return;
+    const b=l.filter(buyer).length,s=l.filter(c=>c.tipo==='socia').length;
+    rows+='<tr><td style="text-transform:capitalize">'+monthLabel(m)+'</td><td class="num">'+l.length+'</td><td class="num">'+b+' ('+pct(b,l.length)+')</td><td class="num">'+s+' ('+pct(s,l.length)+')</td></tr>';
+  });
+  const all=S.contacts.filter(c=>cDate(c)),ab=all.filter(buyer).length,as=all.filter(c=>c.tipo==='socia').length;
+  return '<section class="card"><h2>Contactos nuevos por día</h2><div class="muted">Últimos 14 días, según la fecha en que contactaste a cada una.</div>'+bars(days.map(d=>[fmt(d),perD[d]||0]))+'</section>'+
+    '<section class="card"><h2>Contactos y conversión por mes</h2><div class="muted">De las que contactaste cada mes, cuántas compraron y cuántas son socias hoy.</div>'+
+    (rows?'<div class="tbl"><table><thead><tr><th>Mes</th><th>Contactos</th><th>Compraron</th><th>Socias</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="empty">Todavía no hay datos.</div>')+
+    '<div class="muted num" style="margin-top:8px">En total: '+all.length+' contactos · '+ab+' compraron ('+pct(ab,all.length)+') · '+as+' socias ('+pct(as,all.length)+')</div></section>';
+}
+function statsNegocio(){
+  const t=TODAY(),k=ymOf(t);
+  const inv=S.contacts.filter(c=>negReached(c,'invitada'));
+  const ll=inv.filter(c=>negReached(c,'llamada')),so=inv.filter(c=>negReached(c,'socia'));
+  const socias=S.contacts.filter(c=>c.tipo==='socia'),act=socias.filter(c=>c.mant&&c.mant[k]);
+  let rows='';
+  lastMonths(6).forEach(m=>{
+    const l=inv.filter(c=>negFirst(c).slice(0,7)===m);if(!l.length)return;
+    const a=l.filter(c=>negReached(c,'llamada')).length,s=l.filter(c=>negReached(c,'socia')).length;
+    rows+='<tr><td style="text-transform:capitalize">'+monthLabel(m)+'</td><td class="num">'+l.length+'</td><td class="num">'+a+' ('+pct(a,l.length)+')</td><td class="num">'+s+' ('+pct(s,l.length)+')</td></tr>';
+  });
+  return '<section class="card"><h2>Presentación de negocio</h2>'+
+    (inv.length?bars([['Invitadas',inv.length],['Llegaron a la llamada ('+pct(ll.length,inv.length)+')',ll.length],['Se sumaron como socias ('+pct(so.length,inv.length)+')',so.length]]):'<div class="empty">Cuando marques invitadas desde la ficha o la carga rápida, acá vas a ver el embudo.</div>')+
+    '<div class="muted num" style="margin-top:8px">Socias activas en '+monthLabel(k)+': '+act.length+' de '+socias.length+' ('+pct(act.length,socias.length)+'). Se marcan en Puntos → Mis socias.</div>'+
+    (rows?'<div class="tbl" style="margin-top:8px"><table><thead><tr><th>Invitadas en</th><th>Total</th><th>Llamada</th><th>Socias</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'')+'</section>';
+}
 function viewStats(){
   const t=TODAY();const months=[];let k=ymOf(t);for(let i=0;i<6;i++){months.unshift(k);k=prevMonth(k)}
   const perMonth={},perProd={},perDow=[0,0,0,0,0,0,0],res={},tipos={};
@@ -524,7 +751,7 @@ function viewStats(){
   const DOW=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
   const pts=months.map(m=>[monthLabel(m),monthTotals(m).total]).filter(r=>r[1]>0);
   const totalSeg=Object.values(res).reduce((a,b)=>a+b,0);
-  return '<section class="card"><h2>Unidades vendidas por mes</h2>'+bars(months.map(m=>[monthLabel(m),perMonth[m]||0]))+'</section>'+
+  return statsContactos()+statsNegocio()+'<section class="card"><h2>Unidades vendidas por mes</h2>'+bars(months.map(m=>[monthLabel(m),perMonth[m]||0]))+'</section>'+
    '<section class="card"><h2>Puntos por mes</h2>'+bars(pts)+'</section>'+
    '<section class="card"><h2>Productos más vendidos</h2>'+bars(Object.entries(perProd).sort((a,b)=>b[1]-a[1]).slice(0,8))+'</section>'+
    '<section class="card"><h2>Qué día se vende más</h2>'+bars(DOW.map((d,i)=>[d,perDow[i]]).filter(r=>r[1]>0).sort((a,b)=>b[1]-a[1]))+'</section>'+
@@ -535,7 +762,7 @@ function viewStats(){
 <script>
 /* ---------- vista MÁS ---------- */
 const AV=[['edad','Edad y momento de vida'],['preocupa','Qué le preocupa'],['dice','Qué dice (frases reales)'],['habla','Cómo le hablo'],['dondeEsta','Dónde la encuentro']];
-const TPL=[['cumple','Cumpleaños'],['repo','Reposición'],['seguimiento','Seguimiento'],['frio','Primer mensaje'],['promo','Promo']];
+const TPL=[['cumple','Cumpleaños'],['repo','Reposición'],['seguimiento','Seguimiento'],['frio','Primer mensaje'],['promo','Promo'],['precio','Precio de un producto']];
 function viewMas(){
   let h='<section class="card"><h2>Guardado</h2><div class="muted">'+(S.mode==='nube'?'Tus datos se guardan en tu cuenta y solo los ves vos.':'Sin conexión con tu cuenta.')+'</div><div style="margin-top:8px"><button class="btn ghost" data-act="logout">Cerrar sesión</button></div></section>';
   h+='<section class="card"><h2>Importar mi Excel</h2><div class="muted">En Excel seleccioná las celdas con los títulos de las columnas y todos los datos, copiá y pegá acá. Columnas que reconozco: nombre, tipo, wapp, ig, cumpleaños, cómo la contacté, cuándo, producto, fecha de compra, fecha de repo, cuándo lo recibió. Si una clienta tiene varias compras, repetí su nombre en cada fila. Para un pack escribí el producto con «x3», «x6» o «x12».</div>'+
@@ -576,7 +803,7 @@ async function doImport(text){
   const sep=lines[0].includes('\t')?'\t':(lines[0].split(';').length>lines[0].split(',').length?';':',');
   const heads=splitLine(lines[0],sep).map(norm);
   const find=(keys,exact)=>{let i=heads.findIndex(h=>(exact||[]).includes(h));if(i>=0)return i;return heads.findIndex(h=>keys.some(k=>h.includes(k)))};
-  const ix={nombre:find(['nombre']),tipo:find(['tipo']),wapp:find(['wapp','whats','tel','cel']),ig:find(['insta'],['ig']),
+  const ix={nombre:find(['nombre']),tipo:find(['tipo']),wapp:find(['wapp','whats','tel','cel']),ig:find(['insta'],['ig']),mail:find(['mail','correo']),
     cumple:find(['cumple']),como:find(['comola','comocont']),cuando:find([],['cuando','cuandola','cuandocontacte']),prod:find(['producto']),
     compra:find(['fechadecompra','compra']),repo:find(['fechaderepo','fechadereposicion']),recibio:find(['recibio'])};
   if(ix.nombre<0){toast('No encontré la columna «nombre» en la primera fila.');return}
@@ -588,7 +815,7 @@ async function doImport(text){
     let c=touched.get(norm(nombre))||S.contacts.find(x=>norm(x.nombre)===norm(nombre));
     const ptxt=get(r,'prod').trim();
     if(!c){
-      c={id:uid(),nombre,tipo:'frio',wapp,ig:get(r,'ig'),cumple:parseBirthday(get(r,'cumple')),como:get(r,'como'),cuando:parseDate(get(r,'cuando')),notas:'',compras:[],seg:{next:null,hist:[],pausa:false,nomas:false}};
+      c={id:uid(),nombre,tipo:'frio',wapp,ig:get(r,'ig'),mail:get(r,'mail'),cumple:parseBirthday(get(r,'cumple')),como:get(r,'como'),cuando:parseDate(get(r,'cuando')),notas:'',compras:[],seg:{next:null,hist:[],pausa:false,nomas:false}};
       c.tipo=mapTipo(get(r,'tipo'),!!ptxt);nuevos++;
     }else{
       c=clone(c);
@@ -601,7 +828,7 @@ async function doImport(text){
       const cant=m?Math.max(1,Number(m[1])):1;
       if(!pr){
         const nm=ptxt.replace(/\s*x\s*\d+\s*$/i,'').trim()||ptxt;
-        pr={id:'p'+Date.now().toString(36)+newProds,name:nm,days:30};S.cfg.products.push(pr);newProds++;
+        pr={id:'p'+Date.now().toString(36)+newProds,name:nm,tipo:'uso',sv:0,precio:0,lista:0,pfecha:'',days:30,repone:[]};S.cfg.products.push(pr);newProds++;
       }
       const fecha=parseDate(get(r,'compra'));
       c.compras.push({id:'b'+uid().slice(1),producto:pr.name,fecha,recibido:parseDate(get(r,'recibio')),cant,repo:parseDate(get(r,'repo'))});
@@ -611,6 +838,7 @@ async function doImport(text){
     touched.set(norm(nombre),c);
   }
   for(const c of touched.values()){
+    if(!c.etapas||!c.etapas.length)c.etapas=[{k:c.tipo,f:c.cuando||t}];
     if(!c.seg.next&&!c.seg.hist.length){
       const buys=c.compras.map(p=>p.fecha).filter(Boolean).sort();
       c.seg.next=(c.tipo==='clienta'||c.tipo==='socia')&&buys.length?nextSegFor(buys[buys.length-1]):addDays(t,15);
@@ -624,9 +852,9 @@ async function doImport(text){
 }
 function csvCell(v){v=String(v==null?'':v);return /[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
 async function backup(){
-  const rows=[['nombre','tipo','wapp','ig','cumpleaños','como la contacté','cuando','producto','fecha de compra','fecha de repo','cuando lo recibió','unidades']];
+  const rows=[['nombre','tipo','wapp','ig','mail','cumpleaños','como la contacté','cuando','producto','fecha de compra','fecha de repo','cuando lo recibió','unidades']];
   S.contacts.forEach(c=>{
-    const base=[c.nombre,tipoName(c.tipo),c.wapp,c.ig,bdShow(c.cumple),c.como,c.cuando];
+    const base=[c.nombre,tipoName(c.tipo),c.wapp,c.ig,c.mail||'',bdShow(c.cumple),c.como,c.cuando];
     if(!(c.compras||[]).length)rows.push(base.concat(['','','','','']));
     (c.compras||[]).forEach(p=>rows.push(base.concat([p.producto,p.fecha,repoDate(p),p.recibido,p.cant||1])));
   });
@@ -662,6 +890,99 @@ function copyFrom(id){
   const ta=$('#'+id);if(!ta)return;
   const fallback=()=>{ta.focus();ta.select();try{document.execCommand('copy');toast('Copiado')}catch(e){toast('Seleccioná el texto y copialo')}};
   try{navigator.clipboard.writeText(ta.value).then(()=>toast('Copiado'),fallback)}catch(e){fallback()}
+}
+
+/* ---------- negocio, carga rápida, compras y precios ---------- */
+function negCard(c){
+  const last=(c.negHist||[]).slice(-1)[0];
+  return '<div class="card"><h3>Negocio</h3><div class="muted">'+(last?'Última etapa: '+esc(negName(last.k))+' ('+fmt(last.f)+')':'Todavía no la invitaste a una presentación.')+'</div>'+
+    '<div class="row" style="margin-top:8px"><label style="grid-auto-flow:column;align-items:center">Fecha<input id="neg-f" type="date" style="width:auto" value="'+TODAY()+'"></label></div>'+
+    '<div class="row" style="margin-top:8px">'+NEG.map(n=>'<button class="btn sm '+(c.neg===n[0]?'':'ghost')+'" data-act="neg" data-k="'+n[0]+'">'+n[1]+'</button>').join('')+'</div></div>';
+}
+function parseQuick(text,canal){
+  const rows=[];
+  String(text||'').replace(/\r/g,'').split('\n').forEach(line=>{
+    let s=line.trim();if(!s)return;
+    let mail='',wapp='',ig='';
+    const mm=s.match(/[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+/);if(mm){mail=mm[0].toLowerCase();s=s.replace(mm[0],' ')}
+    const im=s.match(/(^|[\s,;])(@[\w.]+)/);if(im){ig=im[2];s=s.replace(im[2],' ')}
+    const pm=s.match(/\+?\d[\d\s().-]{6,}\d/);if(pm){wapp=pm[0].replace(/[^\d+]/g,'');s=s.replace(pm[0],' ')}
+    let nombre=s.split(/[\t;,]/).map(x=>x.trim()).filter(Boolean).join(' ').replace(/\s+/g,' ').trim();
+    if(canal==='Instagram'&&!ig&&/^[a-z0-9._]+$/i.test(nombre)){ig='@'+nombre}
+    if(!nombre&&mail)nombre=mail.split('@')[0];
+    if(!nombre&&ig)nombre=ig.replace('@','');
+    if(!nombre&&wapp)nombre=wapp;
+    if(nombre)rows.push({nombre,mail,wapp,ig});
+  });
+  return {rows};
+}
+function openQuick(){
+  modal('<div class="row sp"><h2>Carga rápida de contactos</h2><button class="btn ghost sm" data-act="close">Cerrar</button></div>'+
+    '<div class="muted">Pegá una lista, una persona por línea: nombre y mail, WhatsApp o @instagram, en cualquier orden. También sirve una lista de solo mails. Quedan como contactos en frío.</div>'+
+    '<textarea id="qk-text" style="min-height:160px" placeholder="Ana Gómez ana@mail.com&#10;Laura, 54911 5555 1234&#10;@marta.cuida"></textarea>'+
+    '<div class="grid2"><label>Por dónde las contactaste<select id="qk-canal"><option>Mail</option><option>Instagram</option><option>WhatsApp</option><option>Otro</option></select></label>'+
+    '<label>Fecha del contacto<input id="qk-f" type="date" value="'+TODAY()+'"></label></div>'+
+    '<label class="check"><input id="qk-inv" type="checkbox"><span>También las invité a una presentación de negocio</span></label>'+
+    '<div class="muted">Las que ya estén cargadas (mismo nombre, mail, WhatsApp o Instagram) se saltean. El primer seguimiento queda a los 15 días.</div>'+
+    '<div class="row"><button class="btn" data-act="doQuick">Cargar contactos</button></div>');
+}
+function openBuy(){
+  const names=S.contacts.slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'','es'));
+  modal('<div class="row sp"><h2>Registrar compra</h2><button class="btn ghost sm" data-act="close">Cerrar</button></div>'+
+    '<div class="muted">Los puntos se suman solos al mes de la compra. Si la clienta no está cargada, se crea.</div>'+
+    '<label>Clienta<input id="rb-c" list="rb-list" placeholder="Escribí el nombre" autocomplete="off"></label><datalist id="rb-list">'+names.map(c=>'<option value="'+esc(c.nombre)+'"></option>').join('')+'</datalist>'+
+    '<label>Producto<input id="rb-p" list="dl-prods" placeholder="Escribí para buscar" autocomplete="off"></label>'+prodDatalist()+
+    '<div class="grid2"><label>Fecha de compra<input id="rb-f" type="date" value="'+TODAY()+'"></label><label>Unidades<input id="rb-n" type="number" min="1" value="1" inputmode="numeric"></label><label>Recibió (opcional)<input id="rb-r" type="date"></label></div>'+
+    '<div id="rb-info" class="muted"></div><div class="row"><button class="btn" data-act="doBuy">Guardar compra</button></div>');
+}
+function updateBuyInfo(){
+  const e=$('#rb-info');if(!e)return;
+  const pr=prod($('#rb-p').value.trim());if(!pr){e.textContent='';return}
+  const n=Math.max(1,Number($('#rb-n').value)||1);
+  e.textContent=(pr.sv?'Suma '+Math.round(pr.sv*n)+' puntos':'Este producto no tiene puntos cargados')+(pr.precio?' · '+money(pr.precio*n):'');
+}
+function priceText(p,c){
+  let t=(S.cfg.templates.precio||'').replace(/\{producto\}/g,p.name).replace(/\{precio\}/g,p.precio>0?money(p.precio):'(a consultar)').replace(/\{sv\}/g,p.sv||0).replace(/\{nombre\}/g,c?firstName(c):'');
+  return t.replace(/Hola\s+,/,'Hola,');
+}
+function openPrice(p){
+  S.pm=p;S.mctx={id:null};
+  modal('<div class="row sp"><h2>Precio</h2><button class="btn ghost sm" data-act="close">Cerrar</button></div>'+
+    '<div><b>'+esc(p.name)+'</b></div><div class="muted">'+(p.precio?money(p.precio)+(p.lista>p.precio?' (lista '+money(p.lista)+')':'')+(p.pfecha?' · actualizado el '+fmt(p.pfecha):''):'Este producto todavía no tiene precio cargado.')+(p.sv?' · '+p.sv+' SV':'')+'</div>'+
+    '<label>¿Para quién? (opcional)<input id="pm-c" list="pm-list" placeholder="Escribí el nombre de la clienta" autocomplete="off"></label><datalist id="pm-list">'+S.contacts.map(c=>'<option value="'+esc(c.nombre)+'"></option>').join('')+'</datalist>'+
+    '<textarea id="mtext">'+esc(priceText(p,null))+'</textarea>'+
+    '<div class="row"><a class="btn" id="mwa" target="_blank" rel="noopener" href="#" hidden>Abrir WhatsApp</a><button class="btn ghost" data-act="copy">Copiar mensaje</button></div>'+
+    '<div class="muted">Revisá el texto antes de enviar. Los precios los actualizás vos desde Editar.</div>');
+}
+function updatePrice(){
+  const n=$('#pm-c').value.trim(),c=S.contacts.find(x=>norm(x.nombre)===norm(n))||null;
+  S.mctx={id:c?c.id:null};
+  const ta=$('#mtext');ta.value=priceText(S.pm,c);
+  const a=$('#mwa');if(c&&c.wapp){a.href=waLink(c.wapp,ta.value);a.hidden=false}else a.hidden=true;
+}
+function openProd(p,isNew){
+  S.pe=p;S.pnew=!!isNew;
+  const rep=(p.repone||[]).map((r,i)=>{const t=prodById(r.id);return '<div class="row sp"><span>'+esc(t?t.name:'(producto borrado)')+' × '+r.cant+'</span><button class="btn sm ghost" data-act="delRep" data-i="'+i+'">Quitar</button></div>'}).join('');
+  modal('<div class="row sp"><h2>'+(isNew?'Nuevo producto':esc(p.name))+'</h2><button class="btn ghost sm" data-act="close">Cerrar</button></div>'+
+    '<div class="grid2"><label>Nombre<input id="pe-name" value="'+esc(p.name)+'"></label>'+
+    '<label>Tipo<select id="pe-tipo">'+TP.map(x=>'<option value="'+x[0]+'"'+((p.tipo||'uso')===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select></label>'+
+    '<label>Puntos (SV) por unidad<input id="pe-sv" type="number" min="0" inputmode="decimal" value="'+(p.sv||0)+'"></label>'+
+    '<label>Precio actual ($)<input id="pe-precio" type="number" min="0" inputmode="numeric" value="'+(p.precio||'')+'"></label>'+
+    '<label>Precio de lista ($, opcional)<input id="pe-lista" type="number" min="0" inputmode="numeric" value="'+(p.lista||'')+'"></label>'+
+    '<label>Días que dura una unidad<input id="pe-days" type="number" min="1" inputmode="numeric" value="'+(p.days||30)+'"></label></div>'+
+    '<div class="muted">'+(p.pfecha?'Precio actualizado el '+fmt(p.pfecha)+'. ':'')+'Los días son un estimado: cambialos cuando quieras. Solo cuentan en productos de uso.</div>'+
+    '<div class="card"><h3>Qué repone</h3><div class="muted">Para kits y tecnologías: los productos que la clienta va a volver a comprar.</div>'+(rep||'<div class="empty">Nada cargado.</div>')+
+    '<div class="grid2" style="margin-top:8px"><label>Producto<input id="pe-rp" list="dl-uso" placeholder="Escribí para buscar" autocomplete="off"></label><label>Unidades<input id="pe-rc" type="number" min="1" value="1" inputmode="numeric"></label></div>'+
+    '<datalist id="dl-uso">'+S.cfg.products.filter(isUso).slice().sort(bn).map(x=>'<option value="'+esc(x.name)+'"></option>').join('')+'</datalist>'+
+    '<div style="margin-top:8px"><button class="btn sm" data-act="addRep">Agregar</button></div></div>'+
+    '<div class="row sp"><button class="btn" data-act="saveProd">Guardar</button>'+(isNew?'':'<button class="btn bad sm" data-act="delProd">Borrar</button>')+'</div>');
+}
+function collectProd(p){
+  const v=id=>{const e=$('#'+id);return e?e.value.trim():''};
+  p.name=v('pe-name')||p.name;p.tipo=v('pe-tipo')||p.tipo;p.sv=Number(v('pe-sv'))||0;
+  const np=Number(v('pe-precio'))||0;if(np!==(p.precio||0))p.pfecha=TODAY();p.precio=np;
+  p.lista=Number(v('pe-lista'))||0;p.days=Math.max(1,Number(v('pe-days'))||p.days||30);
+  return p;
 }
 
 /* ---------- acciones ---------- */
@@ -705,35 +1026,96 @@ const ACT={
   repoPos(d){const c=clone(byId(d.id));const p=c.compras.find(x=>x.id===d.pid);if(p){p.repo=addDays(TODAY(),7);upsert(c);render()}},
   repoSkip(d){const c=clone(byId(d.id));const p=c.compras.find(x=>x.id===d.pid);if(p){p.skip=true;upsert(c);render()}},
   edit(d){const c=byId(d.id);if(c)openEdit(clone(c),false)},
-  newC(){openEdit({id:uid(),nombre:'',tipo:'frio',wapp:'',ig:'',cumple:'',como:'',cuando:TODAY(),notas:'',compras:[],seg:newSeg()},true)},
+  newC(){openEdit({id:uid(),nombre:'',tipo:'frio',wapp:'',ig:'',mail:'',cumple:'',como:'',cuando:TODAY(),notas:'',compras:[],etapas:[],seg:newSeg()},true)},
   saveC(d){
+    const before=S.editing.tipo;
     const c=collect(S.editing);if(!c.nombre){toast('Escribí el nombre');return}
+    const nt=c.tipo;
+    if(d.new==='1'){c.etapas=[{k:nt,f:c.cuando||TODAY()}]}
+    else{c.tipo=before;setTipo(c,nt,TODAY());if(nt==='socia'&&c.neg!=='socia')setNeg(c,'socia',TODAY())}
     c.seg=c.seg||newSeg();
     if(d.new==='1'&&!c.seg.next)c.seg.next=addDays(TODAY(),15);
     upsert(c);closeModal();render();toast('Guardado');
   },
   addBuy(){
     const c=collect(S.editing);if(!c.nombre){toast('Escribí el nombre primero');return}
-    const fecha=$('#ap-fecha').value||TODAY();
-    c.compras=c.compras||[];
-    c.compras.push({id:'b'+uid().slice(1),producto:$('#ap-prod').value,fecha,recibido:$('#ap-rec').value||'',cant:Math.max(1,Number($('#ap-cant').value)||1),repo:''});
-    if(c.tipo!=='clienta'&&c.tipo!=='socia')c.tipo='clienta';
+    const pr=prod($('#ap-prod').value.trim());if(!pr){toast('Elegí un producto de la lista');return}
+    const fecha=$('#ap-fecha').value||TODAY(),cant=Math.max(1,Number($('#ap-cant').value)||1);
+    const b=newBuy(c,pr.name,fecha,$('#ap-rec').value||'',cant);
+    if(c.tipo!=='clienta'&&c.tipo!=='socia')setTipo(c,'clienta',fecha);
     c.seg=c.seg||newSeg();
     if(!c.seg.hist.length&&!c.seg.pausa&&!c.seg.nomas)c.seg.next=addDays(fecha,15);
-    upsert(c);openEdit(clone(c),false);toast('Compra agregada');render();
+    upsert(c);saveCfg();openEdit(clone(c),false);toast('Compra agregada'+(b.pts?' (+'+b.pts+' pts)':''));render();
   },
-  delBuy(d){const c=S.editing;c.compras=c.compras.filter(p=>p.id!==d.pid);collect(c);upsert(c);openEdit(clone(c),false);render()},
+  delBuy(d){const c=S.editing;c.compras=c.compras.filter(p=>p.id!==d.pid);delPtsByBuy(d.pid);collect(c);upsert(c);saveCfg();openEdit(clone(c),false);render()},
+  neg(d){const c=collect(S.editing);setNeg(c,d.k,($('#neg-f')&&$('#neg-f').value)||TODAY());upsert(c);openEdit(clone(c),false);render();toast('Anotado')},
   delAsk(){$('#delbox').hidden=false},delNo(){$('#delbox').hidden=true},
   delC(){const id=S.editing.id;removeContact(id);closeModal();render();toast('Contacto borrado')},
   reactivar(){const c=collect(S.editing);c.seg.pausa=false;c.seg.nomas=false;c.seg.next=addDays(TODAY(),15);upsert(c);openEdit(clone(c),false);render()},
   promo(){openPromo()},
   promoFor(d){const p=(S.cfg.promos||[]).find(x=>x.id===d.pid);if(!p)return;S.filter={q:'',tipo:'',prod:p.producto};S.tab='contactos';render();
     openPromo('Hola {nombre}, tengo una promo en '+p.producto+': '+p.texto+'. Vence el '+fmt(p.vence)+'. ¿Querés que te cuente más?')},
-  addProd(){const n=$('#np-name').value.trim();if(!n){toast('Escribí el nombre del producto');return}
-    S.cfg.products.push({id:'p'+Date.now().toString(36),name:n,days:Math.max(1,Number($('#np-days').value)||30)});saveCfg();render()},
-  delProd(d){const p=S.cfg.products.find(x=>x.id===d.pid);if(!p)return;
-    if(S.contacts.some(c=>(c.compras||[]).some(b=>b.producto===p.name))){toast('Hay compras con este producto. Cambiale el nombre en vez de quitarlo.');return}
-    S.cfg.products=S.cfg.products.filter(x=>x.id!==d.pid);saveCfg();render()},
+  newProd(){S.pold='';openProd({id:'',name:'',tipo:'uso',sv:0,precio:0,lista:0,pfecha:'',days:30,repone:[]},true)},
+  editProd(d){const p=prodById(d.pid);if(p){S.pold=p.name;openProd(clone(p),false)}},
+  addRep(){
+    const p=collectProd(S.pe),t=prod($('#pe-rp').value.trim());
+    if(!t){toast('Elegí un producto de la lista');return}
+    p.repone=(p.repone||[]).concat([{id:t.id,cant:Math.max(1,Number($('#pe-rc').value)||1)}]);openProd(p,S.pnew);
+  },
+  delRep(d){const p=collectProd(S.pe);p.repone.splice(Number(d.i),1);openProd(p,S.pnew)},
+  async saveProd(){
+    const p=collectProd(S.pe);
+    if(!p.name){toast('Escribí el nombre');return}
+    if(S.cfg.products.some(x=>x.id!==p.id&&norm(x.name)===norm(p.name))){toast('Ya hay un producto con ese nombre');return}
+    if(S.pnew){p.id='p'+Date.now().toString(36);if(!p.pfecha&&p.precio)p.pfecha=TODAY();S.cfg.products.push(p)}
+    else{
+      const i=S.cfg.products.findIndex(x=>x.id===p.id);if(i>=0)S.cfg.products[i]=p;
+      if(S.pold&&S.pold!==p.name){const ch=[];S.contacts.forEach(c=>{let f=false;(c.compras||[]).forEach(b=>{if(b.producto===S.pold){b.producto=p.name;f=true}});if(f)ch.push(c)});await saveContacts(ch)}
+    }
+    await saveCfg();closeModal();render();toast('Guardado');
+  },
+  async delProd(){
+    const p=S.pe;if(!p||S.pnew)return;
+    if(S.contacts.some(c=>(c.compras||[]).some(b=>b.producto===S.pold))){toast('Hay compras con este producto. Mejor cambiale el nombre.');return}
+    S.cfg.products=S.cfg.products.filter(x=>x.id!==p.id);
+    S.cfg.products.forEach(x=>{x.repone=(x.repone||[]).filter(r=>r.id!==p.id)});
+    await saveCfg();closeModal();render();toast('Producto borrado');
+  },
+  priceMsg(d){const p=prodById(d.pid);if(p)openPrice(p)},
+  buy(){openBuy()},
+  async doBuy(){
+    const nm=$('#rb-c').value.trim(),pr=prod($('#rb-p').value.trim());
+    if(!nm){toast('Escribí el nombre de la clienta');return}
+    if(!pr){toast('Elegí un producto de la lista');return}
+    const fecha=$('#rb-f').value||TODAY(),cant=Math.max(1,Number($('#rb-n').value)||1);
+    let c=S.contacts.find(x=>norm(x.nombre)===norm(nm));
+    c=c?clone(c):{id:uid(),nombre:nm,tipo:'clienta',wapp:'',ig:'',mail:'',cumple:'',como:'',cuando:fecha,notas:'',compras:[],etapas:[{k:'clienta',f:fecha}],seg:newSeg()};
+    const b=newBuy(c,pr.name,fecha,$('#rb-r').value||'',cant);
+    if(c.tipo!=='clienta'&&c.tipo!=='socia')setTipo(c,'clienta',fecha);
+    c.seg=c.seg||newSeg();
+    if(!c.seg.hist.length&&!c.seg.pausa&&!c.seg.nomas)c.seg.next=addDays(fecha,15);
+    await upsert(c);await saveCfg();closeModal();render();
+    toast('Compra registrada'+(b.pts?': +'+b.pts+' puntos':''));
+  },
+  quick(){openQuick()},
+  async doQuick(){
+    const canal=$('#qk-canal').value,f=$('#qk-f').value||TODAY(),inv=$('#qk-inv').checked;
+    const r=parseQuick($('#qk-text').value,canal);
+    if(!r.rows.length){toast('Pegá al menos un nombre o un mail');return}
+    const seen=new Set(S.contacts.map(c=>norm(c.nombre))),keys=new Set(),list=[];let dup=0;
+    S.contacts.forEach(c=>{[c.mail,c.wapp,c.ig].forEach(x=>{if(x)keys.add(norm(x))})});
+    r.rows.forEach(x=>{
+      const ks=[x.mail,x.wapp,x.ig].filter(Boolean).map(norm);
+      if(seen.has(norm(x.nombre))||ks.some(k=>keys.has(k))){dup++;return}
+      seen.add(norm(x.nombre));ks.forEach(k=>keys.add(k));
+      const c={id:uid(),nombre:x.nombre,tipo:'frio',wapp:x.wapp,ig:x.ig,mail:x.mail,cumple:'',como:canal,cuando:f,notas:'',compras:[],etapas:[{k:'frio',f}],seg:{next:addDays(f,15),hist:[],pausa:false,nomas:false}};
+      if(inv)setNeg(c,'invitada',f);
+      list.push(c);
+    });
+    list.forEach(c=>S.contacts.push(c));
+    await saveContacts(list);closeModal();render();
+    toast('Cargué '+list.length+' contactos'+(dup?' ('+dup+' ya estaban)':''));
+  },
   addPromo(){const tx=$('#pr-texto').value.trim();if(!tx){toast('Escribí el detalle de la promo');return}
     S.cfg.promos=(S.cfg.promos||[]).concat([{id:'r'+Date.now().toString(36),producto:$('#pr-prod').value,texto:tx,vence:$('#pr-vence').value||addDays(TODAY(),3)}]);saveCfg();render()},
   delPromo(d){S.cfg.promos=(S.cfg.promos||[]).filter(p=>p.id!==d.pid);saveCfg();render()},
@@ -756,10 +1138,14 @@ document.addEventListener('input',e=>{
   if(t.id==='fq'){S.filter.q=t.value;$('#list').innerHTML=listHtml()}
   else if(t.id==='mtext'){const a=$('#mwa'),c=byId(S.mctx&&S.mctx.id);if(a&&c)a.href=waLink(c.wapp,t.value)}
   else if(t.id==='ptext')syncPromo();
+  else if(t.id==='pq'){S.pf.q=t.value;$('#plist').innerHTML=prodListHtml()}
+  else if(t.id==='pm-c')updatePrice();
+  else if(t.id==='rb-p'||t.id==='rb-n')updateBuyInfo();
 });
 document.addEventListener('change',e=>{
   const t=e.target,ds=t.dataset||{};
-  if(t.id==='ftipo'){S.filter.tipo=t.value;$('#list').innerHTML=listHtml()}
+  if(t.id==='pt'){S.pf.tipo=t.value;$('#plist').innerHTML=prodListHtml()}
+  else if(t.id==='ftipo'){S.filter.tipo=t.value;$('#list').innerHTML=listHtml()}
   else if(t.id==='fprod'){S.filter.prod=t.value;$('#list').innerHTML=listHtml()}
   else if(t.id==='gmeta'){const k=S.ym||ymOf(TODAY());const g=S.cfg.goals[k]=S.cfg.goals[k]||{meta:0,log:[]};g.meta=Number(t.value)||0;saveCfg();render()}
   else if(t.id==='mirango'){S.cfg.miRango=t.value;saveCfg()}
